@@ -1,6 +1,6 @@
-pub mod kdf;
-pub mod cipher;
 pub mod cascade;
+pub mod cipher;
+pub mod kdf;
 
 pub use cascade::{cascade_decrypt, cascade_encrypt, CascadeKey};
 pub use cipher::{aead_decrypt, aead_encrypt, AeadAlgorithm};

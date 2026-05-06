@@ -54,7 +54,11 @@ pub fn persist(m: &mut MountedVolume) -> Result<()> {
 
     let tmp = m.path.with_extension("cv.tmp");
     {
-        let mut f = OpenOptions::new().write(true).create(true).truncate(true).open(&tmp)?;
+        let mut f = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .open(&tmp)?;
         f.write_all(MAGIC)?;
         f.write_all(&VERSION.to_le_bytes())?;
         f.write_all(&(header_bytes.len() as u32).to_le_bytes())?;

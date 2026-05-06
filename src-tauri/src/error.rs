@@ -24,7 +24,7 @@ pub enum AppError {
 }
 
 impl Serialize for AppError {
-    fn serialize<S: serde::Serializer>(&self, ser: S) -> Result<S::Ok, S::Error> {
+    fn serialize<S: serde::Serializer>(&self, ser: S) -> std::result::Result<S::Ok, S::Error> {
         ser.serialize_str(&self.to_string())
     }
 }

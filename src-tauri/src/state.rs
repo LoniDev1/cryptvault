@@ -9,6 +9,8 @@ pub struct AppState {
 
 impl AppState {
     pub fn new() -> Self {
-        Self { mounts: Arc::new(Mutex::new(HashMap::new())) }
+        Self {
+            mounts: Arc::new(Mutex::new(HashMap::new())),
+        }
     }
 }

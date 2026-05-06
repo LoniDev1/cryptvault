@@ -16,7 +16,10 @@ pub struct EntryInfo {
 }
 
 fn now() -> u64 {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0)
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0)
 }
 
 pub fn add_files(m: &mut MountedVolume, files: &[PathBuf]) -> Result<Vec<EntryInfo>> {
@@ -26,7 +29,10 @@ pub fn add_files(m: &mut MountedVolume, files: &[PathBuf]) -> Result<Vec<EntryIn
             let bytes = fs::read(p)?;
             let info = EntryInfo {
                 id: Uuid::new_v4().to_string(),
-                name: p.file_name().map(|x| x.to_string_lossy().to_string()).unwrap_or_else(|| "file".into()),
+                name: p
+                    .file_name()
+                    .map(|x| x.to_string_lossy().to_string())
+                    .unwrap_or_else(|| "file".into()),
                 size: bytes.len() as u64,
                 created_at: now(),
                 data_b64: base64_encode(&bytes),
@@ -40,7 +46,13 @@ pub fn add_files(m: &mut MountedVolume, files: &[PathBuf]) -> Result<Vec<EntryIn
                     let bytes = fs::read(entry.path())?;
                     let info = EntryInfo {
                         id: Uuid::new_v4().to_string(),
-                        name: format!("{}/{}", p.file_name().map(|x| x.to_string_lossy().to_string()).unwrap_or_default(), rel.to_string_lossy()),
+                        name: format!(
+                            "{}/{}",
+                            p.file_name()
+                                .map(|x| x.to_string_lossy().to_string())
+                                .unwrap_or_default(),
+                            rel.to_string_lossy()
+                        ),
                         size: bytes.len() as u64,
                         created_at: now(),
                         data_b64: base64_encode(&bytes),
@@ -115,7 +127,7 @@ fn sanitize(name: &str) -> PathBuf {
 
 fn base64_encode(bytes: &[u8]) -> String {
     const T: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    let mut s = String::with_capacity((bytes.len() + 2) / 3 * 4);
+    let mut s = String::with_capacity(bytes.len().div_ceil(3) * 4);
     let mut i = 0;
     while i + 3 <= bytes.len() {
         let n = ((bytes[i] as u32) << 16) | ((bytes[i + 1] as u32) << 8) | bytes[i + 2] as u32;
@@ -144,7 +156,10 @@ fn base64_encode(bytes: &[u8]) -> String {
 
 fn base64_decode(s: &str) -> Result<Vec<u8>> {
     let mut t = [255u8; 256];
-    for (i, c) in b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".iter().enumerate() {
+    for (i, c) in b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+        .iter()
+        .enumerate()
+    {
         t[*c as usize] = i as u8;
     }
     let bytes: Vec<u8> = s.bytes().filter(|b| !b.is_ascii_whitespace()).collect();
@@ -158,7 +173,8 @@ fn base64_decode(s: &str) -> Result<Vec<u8>> {
         if a == 255 || b == 255 {
             return Err(AppError::Format("bad base64".into()));
         }
-        let n = ((a as u32) << 18) | ((b as u32) << 12)
+        let n = ((a as u32) << 18)
+            | ((b as u32) << 12)
             | ((if c == b'=' { 0 } else { t[c as usize] }) as u32) << 6
             | (if d == b'=' { 0 } else { t[d as usize] }) as u32;
         out.push((n >> 16) as u8);

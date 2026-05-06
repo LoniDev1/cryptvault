@@ -1,9 +1,11 @@
+#![allow(dead_code, unused_imports)]
+
+mod commands;
 mod crypto;
-mod volume;
+mod error;
 mod files;
 mod state;
-mod commands;
-mod error;
+mod volume;
 
 use state::AppState;
 

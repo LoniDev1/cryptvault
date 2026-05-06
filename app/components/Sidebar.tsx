@@ -1,11 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Box, FilePlus2, FolderLock, KeyRound, Settings2, ShieldCheck } from 'lucide-react';
+import { Box, FilePlus2, FolderLock, KeyRound, LucideIcon, Settings2, ShieldCheck } from 'lucide-react';
 
 export type View = 'vault' | 'create' | 'mount' | 'files' | 'settings';
 
-const items: { id: View; label: string; icon: React.ComponentType<{ size?: number }> }[] = [
+const items: { id: View; label: string; icon: LucideIcon }[] = [
   { id: 'vault', label: 'Vault', icon: FolderLock },
   { id: 'create', label: 'Create', icon: Box },
   { id: 'mount', label: 'Mount', icon: KeyRound },

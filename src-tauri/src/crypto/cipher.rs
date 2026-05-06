@@ -32,10 +32,14 @@ pub fn aead_encrypt(
     if key.len() != alg.key_len() || nonce.len() != alg.nonce_len() {
         return Err(AppError::Crypto("invalid key or nonce length".into()));
     }
-    let payload = Payload { msg: plaintext, aad };
+    let payload = Payload {
+        msg: plaintext,
+        aad,
+    };
     match alg {
         AeadAlgorithm::Aes256Gcm => {
-            let cipher = Aes256Gcm::new_from_slice(key).map_err(|e| AppError::Crypto(e.to_string()))?;
+            let cipher =
+                Aes256Gcm::new_from_slice(key).map_err(|e| AppError::Crypto(e.to_string()))?;
             cipher
                 .encrypt(AesNonce::from_slice(nonce), payload)
                 .map_err(|e| AppError::Crypto(e.to_string()))
@@ -59,10 +63,14 @@ pub fn aead_decrypt(
     if key.len() != alg.key_len() || nonce.len() != alg.nonce_len() {
         return Err(AppError::Crypto("invalid key or nonce length".into()));
     }
-    let payload = Payload { msg: ciphertext, aad };
+    let payload = Payload {
+        msg: ciphertext,
+        aad,
+    };
     match alg {
         AeadAlgorithm::Aes256Gcm => {
-            let cipher = Aes256Gcm::new_from_slice(key).map_err(|e| AppError::Crypto(e.to_string()))?;
+            let cipher =
+                Aes256Gcm::new_from_slice(key).map_err(|e| AppError::Crypto(e.to_string()))?;
             cipher
                 .decrypt(AesNonce::from_slice(nonce), payload)
                 .map_err(|_| AppError::InvalidPassword)

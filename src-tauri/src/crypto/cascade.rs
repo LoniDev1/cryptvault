@@ -43,7 +43,13 @@ pub fn cascade_encrypt(key: &CascadeKey, aad: &[u8], plaintext: &[u8]) -> Result
     let mut payload = Vec::with_capacity(12 + inner.len());
     payload.extend_from_slice(&n_aes);
     payload.extend_from_slice(&inner);
-    let outer = aead_encrypt(AeadAlgorithm::XChaCha20Poly1305, &key.k_xch, &n_xch, aad, &payload)?;
+    let outer = aead_encrypt(
+        AeadAlgorithm::XChaCha20Poly1305,
+        &key.k_xch,
+        &n_xch,
+        aad,
+        &payload,
+    )?;
 
     let mut out = Vec::with_capacity(24 + outer.len());
     out.extend_from_slice(&n_xch);
@@ -53,10 +59,18 @@ pub fn cascade_encrypt(key: &CascadeKey, aad: &[u8], plaintext: &[u8]) -> Result
 
 pub fn cascade_decrypt(key: &CascadeKey, aad: &[u8], ciphertext: &[u8]) -> Result<Vec<u8>> {
     if ciphertext.len() < 24 + 12 {
-        return Err(crate::error::AppError::Format("ciphertext too short".into()));
+        return Err(crate::error::AppError::Format(
+            "ciphertext too short".into(),
+        ));
     }
     let (n_xch, rest) = ciphertext.split_at(24);
-    let outer = aead_decrypt(AeadAlgorithm::XChaCha20Poly1305, &key.k_xch, n_xch, aad, rest)?;
+    let outer = aead_decrypt(
+        AeadAlgorithm::XChaCha20Poly1305,
+        &key.k_xch,
+        n_xch,
+        aad,
+        rest,
+    )?;
     let (n_aes, inner) = outer.split_at(12);
     let plaintext = aead_decrypt(AeadAlgorithm::Aes256Gcm, &key.k_aes, n_aes, aad, inner)?;
     Ok(plaintext)

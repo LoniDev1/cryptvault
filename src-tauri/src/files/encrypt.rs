@@ -29,7 +29,10 @@ pub fn encrypt_file(path: &Path, password: &[u8], kdf_mode: KdfMode) -> Result<P
     let master = derive_master_key(password, &kdf)?;
     let cascade = CascadeKey::from_master(&master, b"file-data");
 
-    let original_name = path.file_name().map(|s| s.to_string_lossy().to_string()).unwrap_or_else(|| "file".into());
+    let original_name = path
+        .file_name()
+        .map(|s| s.to_string_lossy().to_string())
+        .unwrap_or_else(|| "file".into());
 
     let (payload, is_dir) = if path.is_dir() {
         (pack_dir(path)?, true)
@@ -37,7 +40,12 @@ pub fn encrypt_file(path: &Path, password: &[u8], kdf_mode: KdfMode) -> Result<P
         (fs::read(path)?, false)
     };
 
-    let header = FileHeader { kdf, original_name: original_name.clone(), is_dir, kdf_mode };
+    let header = FileHeader {
+        kdf,
+        original_name: original_name.clone(),
+        is_dir,
+        kdf_mode,
+    };
     let header_bytes = serde_json::to_vec(&header)?;
 
     let aad = b"cryptvault/v1/file";
@@ -100,7 +108,10 @@ struct PackedEntry {
 
 fn pack_dir(dir: &Path) -> Result<Vec<u8>> {
     let mut entries: Vec<PackedEntry> = Vec::new();
-    for entry in walkdir::WalkDir::new(dir).into_iter().filter_map(|e| e.ok()) {
+    for entry in walkdir::WalkDir::new(dir)
+        .into_iter()
+        .filter_map(|e| e.ok())
+    {
         if entry.file_type().is_file() {
             let rel = entry.path().strip_prefix(dir).unwrap_or(entry.path());
             let data = fs::read(entry.path())?;
@@ -117,7 +128,11 @@ fn unpack_dir(target: &Path, blob: &[u8]) -> Result<()> {
     fs::create_dir_all(target)?;
     let entries: Vec<PackedEntry> = serde_json::from_slice(blob)?;
     for e in entries {
-        let safe: PathBuf = e.name.split(['/', '\\']).filter(|c| !matches!(*c, "" | "." | "..")).collect();
+        let safe: PathBuf = e
+            .name
+            .split(['/', '\\'])
+            .filter(|c| !matches!(*c, "" | "." | ".."))
+            .collect();
         let dest = target.join(safe);
         if let Some(parent) = dest.parent() {
             fs::create_dir_all(parent)?;

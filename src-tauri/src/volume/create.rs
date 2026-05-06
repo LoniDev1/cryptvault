@@ -40,7 +40,10 @@ pub fn create_volume(
     let meta = VolumeMeta {
         id: Uuid::new_v4().to_string(),
         label: label.to_string(),
-        created_at: SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0),
+        created_at: SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map(|d| d.as_secs())
+            .unwrap_or(0),
         kdf_mode,
     };
 
