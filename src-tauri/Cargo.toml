@@ -1,6 +1,6 @@
 [package]
 name = "cryptvault"
-version = "0.1.1"
+version = "0.1.2"
 description = "Cross-platform encrypted volume and file vault"
 authors = ["cryptvault contributors"]
 edition = "2021"
