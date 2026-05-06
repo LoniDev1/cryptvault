@@ -10,6 +10,7 @@ import { VaultBrowser } from './components/VaultBrowser';
 import { EncryptFiles } from './components/EncryptFiles';
 import { Settings } from './components/Settings';
 import { Splash } from './components/Splash';
+import { Titlebar } from './components/Titlebar';
 import { useAppStore } from './lib/store';
 
 const views: Record<View, { title: string; sub: string; node: React.ReactNode }> = {
@@ -32,7 +33,9 @@ export default function Page() {
   }, [refresh]);
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden">
+    <div className="relative h-screen w-screen overflow-hidden flex flex-col">
+      <Titlebar title="CryptVault" />
+      <div className="relative flex-1 overflow-hidden">
       <AnimatedBackground />
       <AnimatePresence>{!booted && <Splash key="splash" />}</AnimatePresence>
 
@@ -54,6 +57,7 @@ export default function Page() {
             </AnimatePresence>
           </div>
         </main>
+      </div>
       </div>
     </div>
   );
